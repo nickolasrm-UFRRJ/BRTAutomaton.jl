@@ -1,0 +1,18 @@
+language: julia
+
+os:
+  - osx
+  - linux
+  - windows
+
+branches:
+  - main
+  - working
+
+julia:
+  - 1.6
+
+notifications:
+  email: false
+
+coveralls: true
