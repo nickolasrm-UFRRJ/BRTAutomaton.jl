@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 PhantomWall.jl (c) 2021
 Description: A substation is an invisble object that makes bus to stop.
 Created:  2021-04-18T16:32:25.494Z
-Modified: 2021-04-22T09:54:34.300Z
+Modified: 2021-04-23T14:22:57.697Z
 =#
 
 const Occupied = Ref{Union{Bus, Nothing}}
@@ -51,6 +51,17 @@ HeadSubstation(id::Id, parent::Station, position::Position) =
 @inline next_occupied(sub::TailSubstation) = occupied(next_occupied_ref(sub))
 @inline fill_next!(sub::TailSubstation, bus::Bus) = fill!(next_occupied_ref(sub), bus)
 
+@inline next_occupied(sub::HeadSubstation) = true
+
 @inline parent(sub::AbstractSubstation) = sub.parent
-@inline position(sub::AbstractSubstation) = sub.position
+@inline Base.position(sub::AbstractSubstation) = sub.position
 @inline last(sub::AbstractSubstation) = sub.last
+
+# Displays
+Base.show(io::IO, sub::AbstractSubstation) = 
+    print(io, "Substation(id: $(id(sub)), position: $(position(sub)), "*
+    "occupied by: $(bus(occupied_ref(sub))), parent: $(id(parent(sub))))")
+
+Base.display(sub::AbstractSubstation) =
+    print("Substation(id: $(id(sub)), position: $(position(sub)), "*
+    "occupied by: $(bus(occupied_ref(sub))), parent: $(id(parent(sub))))")

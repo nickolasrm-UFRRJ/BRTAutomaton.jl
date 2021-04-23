@@ -4,9 +4,5 @@ authors = ["nickolas da rocha machado <nickolas123full@gmail.com>"]
 version = "0.1.0"
 
 [deps]
-PointerArithmetic = "c94a8726-515c-4ee5-9c02-6a0d0dc456e9"
-StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[compat]
-PointerArithmetic = "0.2.0"
