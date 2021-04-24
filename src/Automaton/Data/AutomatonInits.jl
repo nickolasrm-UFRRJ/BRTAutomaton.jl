@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 AutomatonInits.jl (c) 2021
 Description: Initializers for the automaton struct
 Created:  2021-04-22T07:53:07.405Z
-Modified: 2021-04-23T19:25:29.714Z
+Modified: 2021-04-24T00:37:12.626Z
 =#
 
 function asserts(station_quantity::Int,
@@ -15,9 +15,8 @@ function asserts(station_quantity::Int,
          safe_margin::Integer,
          bus_capacity::Integer,
          station_capacity::Integer,
-         boarded_iterations::Integer,
          max_embark::Integer,
-         max_desimbark::Integer,
+         max_disembark::Integer,
          max_generation::Integer,
          max_speed::Integer)
     @assert station_quantity > 0 "At least one station is required"
@@ -31,9 +30,8 @@ function asserts(station_quantity::Int,
     @assert safe_margin >= 0 "Safe distance cannot be negative"
     @assert bus_capacity > 0 "Bus capacity should be higher than 0 and lesser than $(typemax(BusCapacity))"
     @assert station_capacity > 0 "Station capacity should be higher than 0 and lesser than $(typemax(Sleep))"
-    @assert boarded_iterations > 0 "The buses need to be on station for at least one iteration"
     @assert max_embark >= 0 "It can't have a negative number of embarking passengers"
-    @assert max_desimbark >= 0 "It can't have a negative number of desimbarking passengers"
+    @assert max_disembark >= 0 "It can't have a negative number of disembarking passengers"
     @assert max_generation > 0 "Stations needs to produce at least a passenger"
     @assert max_speed > 0 "Max speed cannot be lesser than 1, otherwise, the bus won't move"
 end
@@ -64,7 +62,7 @@ generate(::Type{Bus}, intineraries::Vector{Intinerary}, id::Channel{Id}) =
 
     
 @inline rand_embark(max_embark::BusCapacity) = rand(one(BusCapacity):max_embark)
-@inline rand_desimbark(max_desimbark::BusCapacity) =  rand(one(BusCapacity):max_desimbark)
+@inline rand_disembark(max_disembark::BusCapacity) =  rand(one(BusCapacity):max_disembark)
 @inline rand_generation(max_generation::BusCapacity) = rand(one(BusCapacity):max_generation)
 
 Base.length(::Type{Station}, number_of_substations::Int, substation_spacing::Position) =
@@ -73,14 +71,14 @@ Base.length(::Type{Station}, number_of_substations::Int, substation_spacing::Pos
 #Ids already sorted (beware when paralellizing)
 function generate(::Type{Station}, number_of_stations::Int, id::Channel{Id}, 
         station_spacing::Position, number_of_substations::Int, substation_spacing::Position,
-        max_embark::BusCapacity, max_desimbark::BusCapacity, max_generation::BusCapacity)
+        max_embark::BusCapacity, max_disembark::BusCapacity, max_generation::BusCapacity)
     station_position(i::Int) = Position(FIRST_STATION_POSITION + 
         i * length(Station, number_of_substations, substation_spacing) + 
         i * station_spacing)
         
     [Station(take!(id), Id(i),
         station_position(offseted_i),
-        rand_embark(max_embark), rand_desimbark(max_desimbark), 
+        rand_embark(max_embark), rand_disembark(max_disembark), 
         rand_generation(max_generation)) for (i, offseted_i) in enumerate(0:offset1(number_of_stations))]
 end
 

@@ -6,12 +6,12 @@
 
     @testset "Basic Movement" begin
         run!(a, 2)
-        @test position(buses(a)[1]) == Position(18)
+        @test position(buses(a)[1]) == Position(19)
         run!(a, 1)
-        @test position(buses(a)[1]) == Position(20)
+        @test position(buses(a)[1]) == Position(21)
         run!(a, 3)
         @test speed(buses(a)[1]) == Speed(4)
-        @test position(buses(a)[1]) == Position(31)
+        @test position(buses(a)[1]) == Position(32)
     end
 
     @testset "Cyclic" begin

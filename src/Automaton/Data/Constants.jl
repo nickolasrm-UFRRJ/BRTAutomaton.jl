@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Constants.jl (c) 2021
 Description: Contains all constants used by the automaton
 Created:  2021-03-21T15:19:19.485Z
-Modified: 2021-04-23T18:06:39.230Z
+Modified: 2021-04-24T03:27:56.847Z
 =#
 
 #Auxiliar functions
@@ -18,6 +18,7 @@ const Position = UInt16
 const BusCapacity = UInt8
 const StationCapacity = UInt16
 const Sleep = UInt8
+const Stat = Int64
 
 #Automaton environment
 const BUS_LENGTH = Position(4)

@@ -4,5 +4,7 @@ module BRTAutomaton
 
     include("Automata.jl")
     @reexport using .Automata
+    include("GUI.jl")
+    @reexport using .GUI
 
 end

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>BRTAutomaton</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+        <script>
+            function draw()
+            {
+
+            }
+
+            function send_iterations()
+            {
+                Blink.msg('iterate', parseInt($('#input-iterations').val()))
+            }
+
+            function block_input()
+            {
+                $('#input-iterations, #btn-run').attr('disabled', '')
+            }
+
+            function unblock_input()
+            {
+                $('#input-iterations, #btn-run').removeAttr('disabled')
+            }
+
+            const zoom_step = 0.25
+            function zoom_val(){ return parseFloat($('#drawing-area').css('zoom')) }
+            function zoom_in()
+            { 
+                let val = zoom_val()
+                if(val < 3)
+                    $('#drawing-area').css('zoom', zoom_val() + zoom_step) 
+            }
+
+            function zoom_out()
+            { 
+                let val = zoom_val()
+                if(val > 0.25)
+                    $('#drawing-area').css('zoom', zoom_val() - zoom_step) 
+            }
+        </script>
+    </head>
+    <body class="bg-light">
+        <main class="container bg-light my-4">
+            <article class="row m-0 mb-3"
+                style="height: 480px;">
+                <div class="bg-white col-8 h-100 overflow-auto border d-flex align-items-center" 
+                    id="drawing-area"
+                    style="zoom:1;">
+                    <div class="m-auto d-inline">
+                        <div class="car border d-flex align-items-center justify-content-center border-secondary" 
+                            style="width: 50px; height: 50px; display: inline-block">
+                            <i class="bi bi-truck w-100 h-100 text-center" style="font-size: 30px;"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white col h-100 border ml-3 py-3">
+                    <h4>Stats</h4>
+                    <table class="w-100">
+                        <tbody>
+                            <tr>
+                                <td>Average speed: </td>
+                                <td id="avg-speed"></td>
+                            </tr>
+                            <tr>
+                                <td>Average iterations per cycle: </td>
+                                <td id="avg-iterations-per-cycle"></td>
+                            </tr>
+                            <tr>
+                                <td>Average embarking people: </td>
+                                <td id="avg-embarking"></td>
+                            </tr>
+                            <tr>
+                                <td>Average disembarking people: </td>
+                                <td id="avg-desimbarking"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+            <aside class="d-flex d-inline">
+                <input type="number" class="form-control" id="input-iterations" placeholder="Number of iterations" min="1">
+                <button class="ml-2 btn btn-primary" id="btn-run" onclick="send_iterations()">Iterate</button>
+                <div class="btn-group ml-2" role="group">
+                    <button type="button" class="btn btn-secondary" onclick="zoom_in()">
+                        <i class="bi bi-zoom-in"></i></button>
+                    <button type="button" class="btn btn-secondary" onclick="zoom_out()">
+                        <i class="bi bi-zoom-out"></i></button>
+                </div>
+            </aside>
+        </main>
+    </body>
+</html>

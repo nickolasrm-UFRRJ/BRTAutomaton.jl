@@ -12,14 +12,14 @@ struct Station <: Object
     relative_id::Id #starts at the number of stations, and not objects anymore
     position::Position
     embark_rate::BusCapacity
-    desimbark_rate::BusCapacity
+    disembark_rate::BusCapacity
     generation_rate::BusCapacity
     passengers::Ref{StationCapacity}
 end
 
 Station(id::Id, relative_id::Id, position::Position, embark_rate::BusCapacity, 
-        desimbark_rate::BusCapacity, generation_rate::BusCapacity) =
-    Station(id, relative_id, position, embark_rate, desimbark_rate, 
+        disembark_rate::BusCapacity, generation_rate::BusCapacity) =
+    Station(id, relative_id, position, embark_rate, disembark_rate, 
         generation_rate, Ref(zero(StationCapacity)))
 
 # Getters and setters
@@ -28,7 +28,7 @@ Station(id::Id, relative_id::Id, position::Position, embark_rate::BusCapacity,
 @inline passengers!(station::Station, value::StationCapacity) = station.passengers[] = value
 
 @inline embark_rate(station::Station) = station.embark_rate
-@inline desimbark_rate(station::Station) = station.desimbark_rate
+@inline disembark_rate(station::Station) = station.disembark_rate
 @inline generation_rate(station::Station) = station.generation_rate
 
 @inline Base.position(station::Station) = station.position
@@ -38,10 +38,10 @@ Station(id::Id, relative_id::Id, position::Position, embark_rate::BusCapacity,
 # Displays
 Base.show(io::IO, st::Station) =
     print(io, "Station(id: $(id(st)), position: $(position(st)), "*
-        "embark_rate: $(embark_rate(st)), desimbark_rate: $(desimbark_rate(st)), "*
+        "embark_rate: $(embark_rate(st)), disembark_rate: $(disembark_rate(st)), "*
         "passengers: $(passengers(st)))")
 
 Base.display(st::Station) =
     print("Station(id: $(id(st)), position: $(position(st)), "*
-        "embark_rate: $(embark_rate(st)), desimbark_rate: $(desimbark_rate(st)), "*
+        "embark_rate: $(embark_rate(st)), disembark_rate: $(disembark_rate(st)), "*
         "passengers: $(passengers(st)))")

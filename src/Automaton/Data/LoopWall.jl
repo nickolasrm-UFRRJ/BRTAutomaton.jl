@@ -5,7 +5,7 @@ LoopWall.jl (c) 2021
 Description: Object that represents the end of a corridor, and sends the bus
             back to the start
 Created:  2021-04-22T22:44:24.692Z
-Modified: 2021-04-23T04:44:19.522Z
+Modified: 2021-04-24T06:46:31.310Z
 =#
 
 mutable struct LoopWall <: Object

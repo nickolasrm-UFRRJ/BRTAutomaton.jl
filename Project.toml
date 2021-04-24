@@ -4,5 +4,6 @@ authors = ["nickolas da rocha machado <nickolas123full@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
