@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Automaton.jl (c) 2021
 Description: Automaton module
 Created:  2021-04-23T13:59:25.269Z
-Modified: 2021-04-24T04:24:24.484Z
+Modified: 2021-04-24T16:51:01.933Z
 =#
 
 module Automata
@@ -27,6 +27,8 @@ module Automata
     include("Automaton/Reset.jl")
 
     export Automaton, Intinerary, run!, reset!
+    export Bus, Station, AbstractSubstation, HeadSubstation, 
+        TailSubstation, LoopWall, Object
     export buses, position, speed, objects, waiting, id
     export avg_speed, avg_cycle_iterations, avg_embarking, avg_disembarking
     export Position, Speed, Sleep, BusCapacity, StationCapacity

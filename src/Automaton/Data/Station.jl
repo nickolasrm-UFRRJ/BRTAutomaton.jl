@@ -4,12 +4,12 @@ Emails: nickolas123full@gmail.com
 Station.jl (c) 2021
 Description: A station is a place where a bus can stop to leave or to pick passengers
 Created:  2021-03-21T00:12:34.104Z
-Modified: 2021-04-23T14:42:02.049Z
+Modified: 2021-04-24T17:42:16.155Z
 =#
 
 struct Station <: Object
     id::Id
-    relative_id::Id #starts at the number of stations, and not objects anymore
+    relative_id::Id #relative to the number of stations, and not the objects anymore
     position::Position
     embark_rate::BusCapacity
     disembark_rate::BusCapacity

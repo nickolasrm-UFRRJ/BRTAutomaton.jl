@@ -45,22 +45,36 @@
                     $('#drawing-area').css('zoom', zoom_val() - zoom_step) 
             }
         </script>
+        <style>
+            :root
+            {
+                --drawing-height: 480px;
+            }
+            #drawing-container
+            {
+                min-height: var(--drawing-height);
+            }
+            #drawing-area
+            {
+                zoom: 1;
+            }
+        </style>
     </head>
     <body class="bg-light">
         <main class="container bg-light my-4">
-            <article class="row m-0 mb-3"
-                style="height: 480px;">
-                <div class="bg-white col-8 h-100 overflow-auto border d-flex align-items-center" 
-                    id="drawing-area"
-                    style="zoom:1;">
-                    <div class="m-auto d-inline">
-                        <div class="car border d-flex align-items-center justify-content-center border-secondary" 
-                            style="width: 50px; height: 50px; display: inline-block">
-                            <i class="bi bi-truck w-100 h-100 text-center" style="font-size: 30px;"></i>
+            <article class="row m-0 mb-3 w-100 align-items-stretch">
+                <div class="col-lg-8 border p-0 mx-auto mb-3 mb-lg-0" id="drawing-container">
+                    <div class="bg-white h-100 overflow-auto d-flex align-items-center" 
+                        id="drawing-area">
+                        <div class="m-auto d-inline">
+                            <div class="car border d-flex align-items-center justify-content-center border-secondary" 
+                                style="width: 50px; height: 50px; display: inline-block">
+                                <i class="bi bi-truck w-100 h-100 text-center" style="font-size: 30px;"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white col h-100 border ml-3 py-3">
+                <div class="bg-white col border ml-lg-3 py-3">
                     <h4>Stats</h4>
                     <table class="w-100">
                         <tbody>
