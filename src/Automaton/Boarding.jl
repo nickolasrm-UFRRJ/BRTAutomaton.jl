@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Boarding.jl (c) 2021
 Description: A set of functions to control the bus flow into the station
 Created:  2021-04-22T14:58:48.251Z
-Modified: 2021-04-25T04:31:37.556Z
+Modified: 2021-04-25T08:11:13.414Z
 =#
 
 function board!(bus::Bus, boarded_counter::Sleep,
@@ -39,11 +39,11 @@ end
 
 function shift!(bus::Bus, sub::HeadSubstation, mesh::Vector{Id}, 
         buses_quantity::Int, exit_looking_distance::Position)
-    bus_pos = position(sub)
     if isboarded(bus)
         decr_boarded!(bus)
     end
     if !isboarded(bus)
+        bus_pos = position(sub) + BUS_LENGTH
         if no_bus(mesh, bus_pos, buses_quantity, exit_looking_distance)
             position!(bus, bus_pos)
             speed!(bus, zero(Speed))

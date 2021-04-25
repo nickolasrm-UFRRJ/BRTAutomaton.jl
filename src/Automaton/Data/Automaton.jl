@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Automaton.jl (c) 2021
 Description: A automaton is a  simulates the BRT traffic
 Created:  2021-03-21T00:53:00.324Z
-Modified: 2021-04-25T04:23:58.767Z
+Modified: 2021-04-25T08:19:21.343Z
 =#
 
 struct Automaton

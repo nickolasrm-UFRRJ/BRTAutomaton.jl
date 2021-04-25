@@ -1,6 +1,5 @@
 @testset "Boarding" begin
     @testset "Stuck" begin
-        using BRTAutomaton
         i1 = Intinerary(true, false)
         i2 = Intinerary(true, true)
         _buses = [i1, i1, i2, i1, i2, i2]

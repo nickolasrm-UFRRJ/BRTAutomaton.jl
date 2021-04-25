@@ -9,14 +9,43 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
         <script>
-            function draw()
+            function clear(from, to)
             {
+                for(let i = from; i <= to; i++)
+                    $(`#cell-${i}`).css('background-color', '#fff')
+            }
 
+            function draw(from, to, color)
+            {
+                for(let i = from; i <= to; i++)
+                    $(`#cell-${i}`).css('background-color', color)
+            }
+
+            function draw_structure(corridor_length)
+            {
+                let container = $('#drawing-area')
+                for(let i = 1; i <= corridor_length; i++)
+                    container.append(
+                        `<div class="m-auto border d-flex align-items-center cell 
+                                justify-content-center border-secondary"
+                           id="cell-${i}">
+                        </div>`
+                    )
+            }
+
+            function write_stats(avg_speed, avg_cycle_iters, avg_embarking, avg_disembarking)
+            {
+                $('#avg-speed').text(String(avg_speed.toFixed(2)))
+                $('#avg-iterations-per-cycle').text(String(avg_cycle_iters.toFixed(2)))
+                $('#avg-embarking').text(String(avg_embarking.toFixed(2)))
+                $('#avg-disembarking').text(String(avg_disembarking.toFixed(2)))
             }
 
             function send_iterations()
             {
-                Blink.msg('iterate', parseInt($('#input-iterations').val()))
+                let iters = $('#input-iterations').val()
+                let sl = $('#input-sleep').val()
+                sendMessageToJulia(`iterate:${iters}:${sl}`)
             }
 
             function block_input()
@@ -29,19 +58,19 @@
                 $('#input-iterations, #btn-run').removeAttr('disabled')
             }
 
-            const zoom_step = 0.25
+            const zoom_step = 0.05
             function zoom_val(){ return parseFloat($('#drawing-area').css('zoom')) }
             function zoom_in()
             { 
                 let val = zoom_val()
-                if(val < 3)
+                if(val < 2)
                     $('#drawing-area').css('zoom', zoom_val() + zoom_step) 
             }
 
             function zoom_out()
             { 
                 let val = zoom_val()
-                if(val > 0.25)
+                if(val > 0.05)
                     $('#drawing-area').css('zoom', zoom_val() - zoom_step) 
             }
         </script>
@@ -54,9 +83,22 @@
             {
                 min-height: var(--drawing-height);
             }
+            #drawing-area-container
+            {
+                max-height: var(--drawing-height);
+            }
             #drawing-area
             {
                 zoom: 1;
+            }
+            .cell
+            {
+                width: 50px;
+                height: 50px;
+            }
+            .icon
+            {
+                font-size: 30px;
             }
         </style>
     </head>
@@ -64,14 +106,14 @@
         <main class="container bg-light my-4">
             <article class="row m-0 mb-3 w-100 align-items-stretch">
                 <div class="col-lg-8 border p-0 mx-auto mb-3 mb-lg-0" id="drawing-container">
-                    <div class="bg-white h-100 overflow-auto d-flex align-items-center" 
-                        id="drawing-area">
-                        <div class="m-auto d-inline">
-                            <div class="car border d-flex align-items-center justify-content-center border-secondary" 
-                                style="width: 50px; height: 50px; display: inline-block">
-                                <i class="bi bi-truck w-100 h-100 text-center" style="font-size: 30px;"></i>
+                    <div class="bg-white h-100 overflow-auto d-flex align-items-center">
+                        <div class="d-inline m-auto"
+                            id="drawing-area-container">
+                            <div id="drawing-area">
+
                             </div>
                         </div>
+                        <!-- corridor goes here -->
                     </div>
                 </div>
                 <div class="bg-white col border ml-lg-3 py-3">
@@ -92,7 +134,7 @@
                             </tr>
                             <tr>
                                 <td>Average disembarking people: </td>
-                                <td id="avg-desimbarking"></td>
+                                <td id="avg-disembarking"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -100,6 +142,7 @@
             </article>
             <aside class="d-flex d-inline">
                 <input type="number" class="form-control" id="input-iterations" placeholder="Number of iterations" min="1">
+                <input type="number" class="form-control ml-2" id="input-sleep" placeholder="Sleep (s)" min="0.1" step="0.1">
                 <button class="ml-2 btn btn-primary" id="btn-run" onclick="send_iterations()">Iterate</button>
                 <div class="btn-group ml-2" role="group">
                     <button type="button" class="btn btn-secondary" onclick="zoom_in()">
