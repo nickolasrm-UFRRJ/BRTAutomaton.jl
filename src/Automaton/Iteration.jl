@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Iteration.jl (c) 2021
 Description: Contains functions related to the automaton iterations
 Created:  2021-04-19T19:50:34.354Z
-Modified: 2021-04-24T07:20:56.309Z
+Modified: 2021-04-25T04:57:07.870Z
 =#
 
 function run!(automaton::Automaton, iterations::Int)
@@ -19,23 +19,27 @@ function iterate!(automaton::Automaton)
     arr_objects = objects(automaton)
     mesh_i, mesh_i1 = meshes!(automaton)
     bus_capacity = capacity(Bus, automaton)
+    boarded_iters = boarded_iterations(automaton)
     
     deploy_bus!(
         automaton,
         deploying_queue(automaton),
         loop_wall(automaton),
         mesh_i,
-        first_substations(automaton)
+        mesh_i1,
+        first_substation(automaton),
+        length(arr_buses),
+        boarded_iters
     )
 
     for station in arr_stations iterate!(station, 
         capacity(Station, automaton)) end
     for sub in heads iterate!(automaton, sub, mesh_i, mesh_i1, length(arr_buses), 
-        bus_capacity, exit_looking_distance(automaton)) end
+        bus_capacity, exit_looking_distance(automaton), boarded_iters) end
     #because they are sequentially allocated, substations will 
     #be sorted in decrescent order 
     for tail in tails for sub in tail iterate!(automaton, sub, mesh_i, mesh_i1,
-        bus_capacity) end end
+        bus_capacity, boarded_iters) end end
     for bus in arr_buses iterate!(automaton, bus, mesh_i, mesh_i1, 
         arr_objects, max_speed(automaton)) end
 
@@ -43,37 +47,42 @@ function iterate!(automaton::Automaton)
 end
 
 function deploy_bus!(automaton::Automaton, queue::Vector{Bus}, 
-        wall::LoopWall, mesh::Vector{Id}, first_subs::Vector{AbstractSubstation})
-    enqueue!(automaton, queue, wall, mesh)
+        wall::LoopWall, mesh_i::Vector{Id}, mesh_i1::Vector{Id}, 
+        first_sub::AbstractSubstation, buses_quantity::Int,
+        boarded_iterations::Sleep)
+    enqueue!(automaton, queue, wall)
 
     if !isempty(queue)
-        look_next = true
-
-        while look_next
-            look_next = false
-            for sub in first_subs
-                if !occupied(sub)
-                    bus = popfirst!(queue)
-                    fill!(sub, bus)
-                    if !isempty(queue)
-                        look_next = true
-                    end
-                    break
-                end
+        if !occupied(first_sub)
+            if next_occupied(first_sub)
+                bus = dequeue!(queue, mesh_i, mesh_i1)
+                boarded!(bus, boarded_iterations)
+                fill!(first_sub, bus)
+            elseif no_bus(mesh_i, BUS_STARTING_POSITION, 
+                    buses_quantity, OFFSET1_BUS_STARTING_POSITION)
+                bus = dequeue!(queue, mesh_i, mesh_i1)
+                position!(bus, BUS_STARTING_POSITION)
+                fill!(mesh_i1, bus)   
             end
         end
     end
 end
 
-enqueue!(automaton::Automaton, queue::Vector{Bus}, wall::LoopWall, mesh_i::Vector{Id}) =
+function dequeue!(queue::Vector{Bus}, mesh_i::Vector{Id}, mesh_i1::Vector{Id})
+    bus = popfirst!(queue)
+    waiting!(bus, false)
+    boarded!(bus, zero(Sleep))
+    if position(bus) != BUS_STARTING_POSITION 
+        clear!(mesh_i, bus)
+        clear_last!(mesh_i1, bus) 
+    end
+    bus
+end
+
+enqueue!(automaton::Automaton, queue::Vector{Bus}, wall::LoopWall) =
     if !isempty(wall) 
         _bus = bus(wall)
-        clear!(mesh_i, _bus) 
-        position!(_bus, VOID_POSITION)
         
-        waiting!(_bus)
-        boarded!(_bus)
-
         incr_cycle_counter!(automaton)
         add_to_cycle_iterations_sum!(automaton, cycle_iterations(_bus))
         reset_cycle_iterations!(_bus)
@@ -89,8 +98,10 @@ end
 function iterate!(automaton::Automaton, bus::Bus, mesh_i::Vector{Id}, 
         mesh_i1::Vector{Id}, objects::Vector{Object}, 
         max_speed::Speed)
-    if !waiting(bus) && !boarded(bus)
+    if !waiting(bus) && !isboarded(bus)
         move!(bus, mesh_i, mesh_i1, objects, max_speed)
+    elseif waiting(bus)
+        wait!(bus, mesh_i1)
     end
     add_to_speed_sum!(automaton, speed(bus))
     incr_cycle_iterations!(bus)
@@ -98,30 +109,31 @@ end
 
 function iterate!(automaton::Automaton, sub::HeadSubstation, 
         mesh_i::Vector{Id}, mesh_i1::Vector{Id},
-        buses_number::Int, bus_capacity::BusCapacity, 
-        exit_looking_distance::Position)
+        buses_quantity::Int, bus_capacity::BusCapacity, 
+        exit_looking_distance::Position, boarded_iterations::Sleep)
     if occupied(sub)
         _bus = bus(sub)
         station = parent(sub)
-        if position(_bus) != VOID_POSITION clear!(mesh_i, _bus) end
+        board!(_bus, boarded_iterations, mesh_i, mesh_i1)
         disembark!(automaton, _bus, station)
         embark!(automaton, _bus, station, bus_capacity)
-        shift!(_bus, sub, mesh_i, buses_number, exit_looking_distance)
-        write!(mesh_i1, sub)
+        shift!(_bus, sub, mesh_i, buses_quantity, exit_looking_distance)
         incr_boarded_counter!(automaton)
     end
+    write!(mesh_i, sub)
 end
 
 function iterate!(automaton::Automaton, sub::TailSubstation, 
-        mesh_i::Vector{Id}, mesh_i1::Vector{Id}, bus_capacity::BusCapacity)
+        mesh_i::Vector{Id}, mesh_i1::Vector{Id}, bus_capacity::BusCapacity,
+        boarded_iterations::Sleep)
     if occupied(sub)
         _bus = bus(sub)
         station = parent(sub)
-        if position(_bus) != VOID_POSITION clear!(mesh_i, _bus) end
+        board!(_bus, boarded_iterations, mesh_i, mesh_i1)
         disembark!(automaton, _bus, station)
         embark!(automaton, _bus, station, bus_capacity)
         shift!(_bus, sub)
-        write!(mesh_i1, sub)
         incr_boarded_counter!(automaton)
     end
+    write!(mesh_i, sub)
 end

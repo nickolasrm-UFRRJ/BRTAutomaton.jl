@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 AutomatonInits.jl (c) 2021
 Description: Initializers for the automaton struct
 Created:  2021-04-22T07:53:07.405Z
-Modified: 2021-04-24T00:37:12.626Z
+Modified: 2021-04-25T04:16:53.145Z
 =#
 
 function asserts(station_quantity::Int,
@@ -13,6 +13,7 @@ function asserts(station_quantity::Int,
          station_spacing::Integer,
          substation_spacing::Integer,
          safe_margin::Integer,
+         boarded_iterations::Integer,
          bus_capacity::Integer,
          station_capacity::Integer,
          max_embark::Integer,
@@ -28,6 +29,7 @@ function asserts(station_quantity::Int,
     @assert station_spacing > 0 "The station spacing must be higher than 0"
     @assert substation_spacing > 0 "The substation spacing must be higher than 0"
     @assert safe_margin >= 0 "Safe distance cannot be negative"
+    @assert boarded_iterations > 0 "A bus has to be boarded at least one iteration"
     @assert bus_capacity > 0 "Bus capacity should be higher than 0 and lesser than $(typemax(BusCapacity))"
     @assert station_capacity > 0 "Station capacity should be higher than 0 and lesser than $(typemax(Sleep))"
     @assert max_embark >= 0 "It can't have a negative number of embarking passengers"
@@ -120,7 +122,11 @@ end
 
 
 
-generate(::Type{LoopWall}, id::Channel{Id}) = LoopWall(take!(id))
+generate(::Type{LoopWall}, id::Channel{Id}, 
+        station_quantity::Int, station_spacing::Position,
+        number_of_substations::Int, substation_spacing::Position) = 
+    LoopWall(take!(id), Position(mesh_length(station_quantity, station_spacing, 
+        number_of_substations, substation_spacing)))
 
 
 

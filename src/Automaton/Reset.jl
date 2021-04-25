@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Reset.jl (c) 2021
 Description: Resets the automaton to the initial state
 Created:  2021-04-24T00:36:03.651Z
-Modified: 2021-04-24T16:51:23.012Z
+Modified: 2021-04-25T04:25:49.426Z
 =#
 
 function reset!(automaton::Automaton)
@@ -51,11 +51,12 @@ function reset_queue!(automaton::Automaton)
 end
 
 function reset!(bus::Bus)
-    position!(bus, VOID_POSITION)
+    position!(bus, BUS_LENGTH)
+    last_position!(bus, BUS_LENGTH)
     speed!(bus, zero(Speed))
     passengers!(bus, zero(BusCapacity))
-    if !boarded(bus) boarded!(bus) end
-    if waiting(bus) waiting!(bus) end
+    boarded!(bus, one(Sleep))
+    waiting!(bus, false)
     cycle_iterations!(bus, zero(Stat))
 end
 

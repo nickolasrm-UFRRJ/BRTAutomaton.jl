@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Automaton.jl (c) 2021
 Description: General purpose functions for managing Data structures
 Created:  2021-03-21T00:53:00.324Z
-Modified: 2021-04-24T04:33:06.033Z
+Modified: 2021-04-25T04:12:45.153Z
 =#
 
 #Intinerary
@@ -24,6 +24,9 @@ Modified: 2021-04-24T04:33:06.033Z
     cycle_iterations!(bus, cycle_iterations(bus) + one(Stat))
 @inline reset_cycle_iterations!(bus::Bus) =
     cycle_iterations!(bus, zero(Stat))
+@inline decr_boarded!(bus::Bus) = boarded!(bus, boarded(bus) - one(Sleep))
+@inline incr_boarded!(bus::Bus) = boarded!(bus, boarded(bus) + one(Sleep))
+@inline isboarded(bus::Bus) = boarded(bus) > zero(Sleep)
     
 
 

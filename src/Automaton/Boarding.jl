@@ -4,8 +4,17 @@ Emails: nickolas123full@gmail.com
 Boarding.jl (c) 2021
 Description: A set of functions to control the bus flow into the station
 Created:  2021-04-22T14:58:48.251Z
-Modified: 2021-04-24T06:09:00.316Z
+Modified: 2021-04-25T04:31:37.556Z
 =#
+
+function board!(bus::Bus, boarded_counter::Sleep,
+        mesh_i::Vector{Id}, mesh_i1::Vector{Id})
+    if boarded(bus) == FLAG_JUST_BOARDED
+        boarded!(bus, boarded_counter)
+        clear!(mesh_i, bus)
+        clear_last!(mesh_i1, bus)
+    end
+end
 
 function disembark!(automaton::Automaton, bus::Bus, station::Station)
     number_of_passengers = min(passengers(bus), disembark_rate(station))
@@ -29,22 +38,26 @@ function shift!(bus::Bus, sub::TailSubstation)
 end
 
 function shift!(bus::Bus, sub::HeadSubstation, mesh::Vector{Id}, 
-        buses_number::Int, exit_looking_distance::Position)
-    bus_pos = position(sub) + one(Position)
-    if boarded(bus)
-        boarded!(bus)
-        waiting!(bus)
-    elseif no_bus(mesh, bus_pos, buses_number, exit_looking_distance)
-        waiting!(bus)
-        position!(bus, bus_pos)
-        clear!(sub)
+        buses_quantity::Int, exit_looking_distance::Position)
+    bus_pos = position(sub)
+    if isboarded(bus)
+        decr_boarded!(bus)
+    end
+    if !isboarded(bus)
+        if no_bus(mesh, bus_pos, buses_quantity, exit_looking_distance)
+            position!(bus, bus_pos)
+            speed!(bus, zero(Speed))
+            clear!(sub)
+        else
+            incr_boarded!(bus)
+        end
     end
 end
 
-function no_bus(mesh::Vector{Id}, pos::Position, buses_number::Int,
+function no_bus(mesh::Vector{Id}, pos::Position, buses_quantity::Int,
         exit_looking_distance::Position)
     for i in (pos - exit_looking_distance):pos
-        if mesh[i] > EMPTY && mesh[i] <= buses_number
+        if mesh[i] > EMPTY && mesh[i] <= buses_quantity
             return false
         end
     end

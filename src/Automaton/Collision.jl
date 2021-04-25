@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Collision.jl (c) 2021
 Description: Functions that estabilish the relation of the bus with other objects
 Created:  2021-04-18T16:27:20.526Z
-Modified: 2021-04-24T07:25:06.246Z
+Modified: 2021-04-25T04:08:19.087Z
 =#
 
 @inline collision(bus::Bus, objects::Vector{Object}, mesh::Vector{Id}, i::Position) =
@@ -13,7 +13,7 @@ Modified: 2021-04-24T07:25:06.246Z
 @inline function collision(bus::Bus, wall::LoopWall)
     enqueue!(wall, bus)
     waiting!(bus)
-    speed!(bus, zero(Speed))
+    speed!(bus, Speed(position(wall) - 1 - position(bus)))
     true
 end
 
@@ -31,7 +31,7 @@ function collision(bus::Bus, sub::AbstractSubstation)
             end
         else
             if next_occupied(sub)
-                boarded!(bus)
+                boarded!(bus, FLAG_JUST_BOARDED)
                 waiting!(bus, false)
                 fill!(sub, bus)
                 speed!(bus, Speed((position(sub) - one(Position)) - position(bus)))

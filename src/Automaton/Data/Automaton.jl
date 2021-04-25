@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Automaton.jl (c) 2021
 Description: A automaton is a  simulates the BRT traffic
 Created:  2021-03-21T00:53:00.324Z
-Modified: 2021-04-24T06:46:15.900Z
+Modified: 2021-04-25T04:23:58.767Z
 =#
 
 struct Automaton
@@ -16,7 +16,7 @@ struct Automaton
     stations::Vector{Station}
     head_substations::Vector{HeadSubstation}
     tail_substations::Vector{Vector{TailSubstation}}
-    first_substations::Vector{AbstractSubstation}
+    first_substation::Union{HeadSubstation, TailSubstation}
 
     objects::Vector{Object}
 
@@ -32,6 +32,7 @@ struct Automaton
     station_spacing::Position
     substation_spacing::Position
     exit_looking_distance::Position
+    boarded_iterations::Sleep
     
     bus_capacity::BusCapacity
     station_capacity::StationCapacity
@@ -58,6 +59,7 @@ function Automaton(;station_quantity::Int,
          station_spacing::Integer=80,
          substation_spacing::Integer=3,
          safe_margin::Integer=2,
+         boarded_iterations::Integer=2,
          bus_capacity::Integer=120,
          station_capacity::Integer=600,
          max_embark::Integer= Int(bus_capacity / 2),
@@ -65,17 +67,19 @@ function Automaton(;station_quantity::Int,
          max_generation::Integer=2,
          max_speed::Integer=4)
     asserts(station_quantity, buses_as_intineraries, number_of_substations,
-            station_spacing, substation_spacing, safe_margin, bus_capacity,
-            station_capacity, max_embark, max_disembark, max_generation, 
-            max_speed)
+            station_spacing, substation_spacing, safe_margin, 
+            boarded_iterations, bus_capacity, station_capacity, 
+            max_embark, max_disembark, max_generation, max_speed)
             
     #Converting types
     station_spacing, substation_spacing, safe_margin, 
     bus_capacity, station_capacity, max_embark, 
-    max_disembark, max_generation, max_speed =
+    max_disembark, max_generation, max_speed,
+    boarded_iterations =
     Position(station_spacing), Position(substation_spacing), Position(safe_margin),
     BusCapacity(bus_capacity), StationCapacity(station_capacity), BusCapacity(max_embark), 
-    BusCapacity(max_disembark), BusCapacity(max_generation), Speed(max_speed)
+    BusCapacity(max_disembark), BusCapacity(max_generation), Speed(max_speed),
+    Sleep(boarded_iterations)
     
     #Allocating data
     id = ids(length(buses_as_intineraries), station_quantity, number_of_substations)
@@ -85,7 +89,8 @@ function Automaton(;station_quantity::Int,
         max_embark, max_disembark, max_generation)
     heads, tails = generate(AbstractSubstation, stations, id, 
         number_of_substations, substation_spacing)
-    wall = generate(LoopWall, id)
+    wall = generate(LoopWall, id, station_quantity, station_spacing, 
+            number_of_substations, substation_spacing)
 
     #Allocating meshes
     mesh_i = mesh(heads, tails, wall, station_spacing, number_of_substations, substation_spacing)
@@ -93,7 +98,7 @@ function Automaton(;station_quantity::Int,
 
     Automaton(buses, [bus for bus in buses], wall,
                         stations, heads, tails,
-                        vcat(heads[1], tails[1]...),
+                        !isempty(tails) ? tails[1][end] : heads[1],
                         vcat(buses, stations, 
                             [[h,t...] for (h,t) in zip(heads, tails)]..., wall),
                         buses_as_intineraries,
@@ -104,6 +109,7 @@ function Automaton(;station_quantity::Int,
                         station_spacing,
                         substation_spacing,
                         safe_margin + BUS_LENGTH,
+                        boarded_iterations,
                         bus_capacity,
                         station_capacity,
                         max_embark,
@@ -143,6 +149,8 @@ end
 @inline capacity(::Type{Bus}, automaton::Automaton) = automaton.bus_capacity
 @inline capacity(::Type{Station}, automaton::Automaton) = automaton.station_capacity
 
+@inline boarded_iterations(automaton::Automaton) = automaton.boarded_iterations
+
 @inline max_speed(automaton::Automaton) = automaton.max_speed
 
 @inline buses(automaton::Automaton) = automaton.buses
@@ -153,22 +161,28 @@ end
 @inline deploying_queue(automaton::Automaton) = automaton.deploying_queue
 @inline loop_wall(automaton::Automaton) = automaton.loop_wall
 
-@inline first_substations(automaton::Automaton) = automaton.first_substations
+@inline first_substation(automaton::Automaton) = automaton.first_substation
 
 @inline speed_sum(automaton::Automaton) = automaton.speed_sum[]
 @inline speed_sum!(automaton::Automaton, val::Stat) = automaton.speed_sum[] = val
+
 @inline iteration_counter(automaton::Automaton) = automaton.iteration_counter[]
 @inline iteration_counter!(automaton::Automaton, val::Stat) = 
     automaton.iteration_counter[] = val
+
 @inline cycle_iterations_sum(automaton::Automaton) = automaton.cycle_iterations_sum[]
 @inline cycle_iterations_sum!(automaton::Automaton, val::Stat) = 
     automaton.cycle_iterations_sum[] = val
+
 @inline cycle_counter(automaton::Automaton) = automaton.cycle_counter[]
 @inline cycle_counter!(automaton::Automaton, val::Stat) = automaton.cycle_counter[] = val
+
 @inline embark_sum(automaton::Automaton) = automaton.embark_sum[]
 @inline embark_sum!(automaton::Automaton, val::Stat) = automaton.embark_sum[] = val
+
 @inline disembark_sum(automaton::Automaton) = automaton.disembark_sum[]
 @inline disembark_sum!(automaton::Automaton, val::Stat) = automaton.disembark_sum[] = val
+
 @inline boarded_counter(automaton::Automaton) = automaton.boarded_counter[]
 @inline boarded_counter!(automaton::Automaton, val::Stat) = automaton.boarded_counter[] = val
 
