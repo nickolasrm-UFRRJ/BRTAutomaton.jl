@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Collision.jl (c) 2021
 Description: Functions that estabilish the relation of the bus with other objects
 Created:  2021-04-18T16:27:20.526Z
-Modified: 2021-04-25T08:34:27.050Z
+Modified: 2021-04-25T08:38:45.847Z
 =#
 
 @inline collision(bus::Bus, objects::Vector{Object}, mesh::Vector{Id}, i::Position) =
@@ -18,9 +18,6 @@ Modified: 2021-04-25T08:34:27.050Z
 end
 
 @inline function collision(bus0::Bus, bus1::Bus, i::Position)
-    @info position(bus1)
-    @info position(bus0)
-    @info length(bus1)
     speed!(bus0, Speed(i - position(bus0) - 1)) 
     true
 end

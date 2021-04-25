@@ -1,0 +1,2 @@
+BitArray replaced Dict for intineraries
+Bus checking with if <= length because they are sorted

@@ -6,6 +6,7 @@ module BRTAutomaton
     @reexport using .Automata
     include("GUI.jl")
     @reexport using .GUI
-    #include
+    include("Optimizer.jl")
+    @reexport using .Optimizer
 
 end
