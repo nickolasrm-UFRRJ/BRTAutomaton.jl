@@ -10,12 +10,12 @@ Modified: 2021-04-26T05:07:39.656Z
 #Id
 @inline isbus(id::Id, buses_quantity::Int) = id > EMPTY && id <= buses_quantity
 
-#Intinerary
-@inline should_stop(intinerary::Intinerary, station::Station) = 
-    intinerary[relative_id(station)]
+#Itinerary
+@inline should_stop(itinerary::Itinerary, station::Station) = 
+    itinerary[relative_id(station)]
 
 @inline should_stop(bus::Bus, sub::AbstractSubstation) =
-    should_stop(intinerary(bus), parent(sub))
+    should_stop(itinerary(bus), parent(sub))
 
 
 #Mesh

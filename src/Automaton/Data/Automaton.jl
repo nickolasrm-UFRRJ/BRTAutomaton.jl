@@ -20,7 +20,7 @@ struct Automaton
 
     objects::Vector{Object}
 
-    lines::Vector{Intinerary}
+    lines::Vector{Itinerary}
 
     mesh_i::Vector{Id}
     mesh_i1::Vector{Id}
@@ -54,7 +54,7 @@ struct Automaton
 end
 
 function Automaton(;station_quantity::Int,
-         buses_as_intineraries::Vector{Intinerary},
+         buses_as_itineraries::Vector{Itinerary},
          number_of_substations::Integer=3,
          station_spacing::Integer=80,
          substation_spacing::Integer=3,
@@ -66,7 +66,7 @@ function Automaton(;station_quantity::Int,
          max_disembark::Integer=bus_capacity,
          max_generation::Integer=2,
          max_speed::Integer=4)
-    asserts(station_quantity, buses_as_intineraries, number_of_substations,
+    asserts(station_quantity, buses_as_itineraries, number_of_substations,
             station_spacing, substation_spacing, safe_margin, 
             boarded_iterations, bus_capacity, station_capacity, 
             max_embark, max_disembark, max_generation, max_speed)
@@ -82,8 +82,8 @@ function Automaton(;station_quantity::Int,
     Sleep(boarded_iterations)
     
     #Allocating data
-    id = ids(length(buses_as_intineraries), station_quantity, number_of_substations)
-    buses = generate(Bus, buses_as_intineraries, id)
+    id = ids(length(buses_as_itineraries), station_quantity, number_of_substations)
+    buses = generate(Bus, buses_as_itineraries, id)
     stations = generate(Station, station_quantity, id, 
         station_spacing, number_of_substations, substation_spacing,
         max_embark, max_disembark, max_generation)
@@ -101,7 +101,7 @@ function Automaton(;station_quantity::Int,
                         !isempty(tails) ? tails[1][end] : heads[1],
                         vcat(buses, stations, 
                             [[h,t...] for (h,t) in zip(heads, tails)]..., wall),
-                        buses_as_intineraries,
+                        buses_as_itineraries,
                         mesh_i, mesh_i1,
                         Ref(false),
                         #Env

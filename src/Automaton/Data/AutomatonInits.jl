@@ -8,7 +8,7 @@ Modified: 2021-04-25T04:16:53.145Z
 =#
 
 function asserts(station_quantity::Int,
-         buses_as_intineraries::Vector{Intinerary},
+         buses_as_itineraries::Vector{Itinerary},
          number_of_substations::Int,
          station_spacing::Integer,
          substation_spacing::Integer,
@@ -21,8 +21,8 @@ function asserts(station_quantity::Int,
          max_generation::Integer,
          max_speed::Integer)
     @assert station_quantity > 0 "At least one station is required"
-    @assert length(buses_as_intineraries) > 0 "At least one bus is required"
-    for bus in buses_as_intineraries
+    @assert length(buses_as_itineraries) > 0 "At least one bus is required"
+    for bus in buses_as_itineraries
         @assert bus[1] == true "Stopping on the first station is mandatory"
     end
     @assert number_of_substations > 0 "A station must have at least one substation"
@@ -57,8 +57,8 @@ ids(interval::UnitRange) =
 
 
 #Ids already sorted (beware when parallelizing)
-generate(::Type{Bus}, intineraries::Vector{Intinerary}, id::Channel{Id}) =
-    [Bus(take!(id), intinerary) for intinerary in intineraries]
+generate(::Type{Bus}, itineraries::Vector{Itinerary}, id::Channel{Id}) =
+    [Bus(take!(id), itinerary) for itinerary in itineraries]
 
 
 

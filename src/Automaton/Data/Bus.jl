@@ -12,7 +12,7 @@ struct Bus <: Object
     position::Ref{Position}
     last_position::Ref{Position}
     speed::Ref{Speed}
-    intinerary::Intinerary
+    itinerary::Itinerary
     passengers::Ref{BusCapacity}
     
     boarded::Ref{Sleep}
@@ -21,9 +21,9 @@ struct Bus <: Object
     cycle_iterations::Ref{Stat}
 end
 
-Bus(id::Id, intinerary::Intinerary) =
+Bus(id::Id, itinerary::Itinerary) =
     Bus(id, Ref(BUS_STARTING_POSITION), Ref(Position(BUS_STARTING_POSITION)), 
-        zero(Speed), intinerary, Ref(zero(BusCapacity)), Ref(one(Sleep)), 
+        zero(Speed), itinerary, Ref(zero(BusCapacity)), Ref(one(Sleep)), 
         Ref(false), Ref(zero(Stat)))
 
 # Getters and setters
@@ -52,7 +52,7 @@ end
 @inline boarded(bus::Bus) = bus.boarded[]
 @inline boarded!(bus::Bus, val::Sleep) = bus.boarded[] = val
 
-@inline intinerary(bus::Bus) = bus.intinerary
+@inline itinerary(bus::Bus) = bus.itinerary
 
 @inline cycle_iterations(bus::Bus) = bus.cycle_iterations[]
 @inline cycle_iterations!(bus::Bus, val::Stat) = bus.cycle_iterations[] = val

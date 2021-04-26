@@ -1,10 +1,10 @@
 @testset "Optimizer" begin
     using BRTAutomaton
-    i1 = Intinerary(true, falses(4)...)
+    i1 = Itinerary(true, falses(4)...)
     buses = [deepcopy(i1) for i in 1:20]
     a = Automaton(
                     station_quantity=5,
-                    buses_as_intineraries=buses)
+                    buses_as_itineraries=buses)
     run!(a, 1000)
     as = avg_speed(a)
     ds = avg_disembarking(a)

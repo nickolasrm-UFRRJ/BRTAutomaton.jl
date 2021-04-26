@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Boarding.jl (c) 2021
 Description: A set of functions to control the bus flow into the station
 Created:  2021-04-22T14:58:48.251Z
-Modified: 2021-04-26T05:08:57.014Z
+Modified: 2021-04-26T09:18:29.112Z
 =#
 
 function board!(bus::Bus, boarded_counter::Sleep,
@@ -59,7 +59,7 @@ function no_bus(mesh::Vector{Id}, pos::Position, buses_quantity::Int,
         exit_looking_distance::Position, objects::Vector{Object})
     for i in (pos - exit_looking_distance):pos
         if isbus(mesh[i], buses_quantity)
-            if isstopped(object(mesh, i, objects))
+            if !isstopped(object(mesh, i, objects))
                 return false
             end
         end

@@ -1,8 +1,8 @@
 @testset "Movement" begin
     using BRTAutomaton
-    _buses = [Intinerary(true)]
+    _buses = [Itinerary(true)]
     a = Automaton(station_quantity=1,
-                    buses_as_intineraries=_buses)
+                    buses_as_itineraries=_buses)
 
     @testset "Basic Movement" begin
         run!(a, 2)
@@ -22,10 +22,10 @@
     end
 
     @testset "Bus deacceleration" begin
-        i = Intinerary(true)
+        i = Itinerary(true)
         _buses = [i, i]
         a = Automaton(station_quantity=1,
-                        buses_as_intineraries=_buses,
+                        buses_as_itineraries=_buses,
                         station_spacing=100,
                         max_speed=4)
         bs = buses(a)

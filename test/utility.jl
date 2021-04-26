@@ -1,9 +1,9 @@
 @testset "Utility" begin
-    i1 = Intinerary(true, false)
-    i2 = Intinerary(true, true)
+    i1 = Itinerary(true, false)
+    i2 = Itinerary(true, true)
     _buses = [i1, i1, i2, i1, i2, i2]
     a = Automaton(station_quantity=2,
-                    buses_as_intineraries=_buses)
+                    buses_as_itineraries=_buses)
     run!(a, 100)
     save(a)
     @test isfile(joinpath(pwd(), "automaton.jld2"))

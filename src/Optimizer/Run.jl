@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Run.jl (c) 2021
 Description: Main functions for running genetic algorithm
 Created:  2021-04-25T18:16:35.535Z
-Modified: 2021-04-26T00:57:07.773Z
+Modified: 2021-04-26T08:14:08.236Z
 =#
 
 unsafe_best(set::TrainingSet) =
@@ -19,7 +19,8 @@ function copy!(automaton::Automaton, set::TrainingSet)
 end
 
 function train!(automaton::Automaton, set::TrainingSet; 
-        gen_limit::Int=typemax(Int), max_fitness::Float32 =typemax(Float32))
+        gen_limit::Int=typemax(Int), max_fitness::Real =typemax(Float32))
+    max_fitness = Float32(max_fitness)
     @assert gen_limit < typemax(Int) || max_fitness < typemax(Float32) "Stopping criteriea not defined"
     i = 0
     while i < gen_limit && fitness(unsafe_best(set)) < max_fitness
