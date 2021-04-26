@@ -1,5 +1,4 @@
 @testset "Movement" begin
-    using BRTAutomaton
     _buses = [Itinerary(true)]
     a = Automaton(station_quantity=1,
                     buses_as_itineraries=_buses)

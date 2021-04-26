@@ -64,7 +64,7 @@ Since it is only triggered when colliding with a bus, the only rule for it is de
 enqueue the bus inside of the loop wall
 set the bus to waiting state
 if possible, dequeue it to the first substation
-clear the bus last position in the mesh
+clear the last position of the bus in the mesh
 ```
 
 ### How to use it?
@@ -82,7 +82,7 @@ To use this package, you have to first have to download its dependencies. But do
 Once you finished installing the project, you can use the following functions:
 
 ##### **Creating a bus**
-To start the automaton, you have to first inform how many buses you want and what stations will it stop
+To start the automaton, you have to first inform how many buses you want and what stations it will stop
 >Remember, stopping at the first station is mandatory
 ```julia
 bus_array = [Itinerary(true, false, true),
@@ -90,7 +90,7 @@ bus_array = [Itinerary(true, false, true),
             Itinerary(true, false, false)]
 # creates three buses.
 ## The first bus will stop at the first and the third stations
-## The second bus will stop on all three stations
+## The second bus will stop at all three stations
 ## The third bus will only stop at the first station
 ```
 > Note: The order of the array is the same order the buses are going to leave the first station
@@ -107,7 +107,7 @@ These two are the only required parameters, but you can configure the automaton 
 - substation_spacing: DEFAULT=3
 - safe_margin: DEFAULT=2
 - boarded_iterations: DEFAULT=2
-- bus_capacity: DEFAULT=12
+- bus_capacity: DEFAULT=120
 - station_capacity: DEFAULT=600
 - max_embark: DEFAULT=bus_capacity / 2
 - max_disembark: DEFAULT=bus_capacity
@@ -126,7 +126,7 @@ Nothing better than a gui to see results.
 
 To use a GUI with your automaton, simply call: `gui(automaton)`. Once the interface opens, you can set the number of iterations you want to run, and the sleep between each of them.
 
-![graphics user interface](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/dev/sequential/screenshots/gui.gif)
+![graphics user interface](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/main/screenshots/gui.gif)
 
 > Note: You can zoom in and out the map to have a larger view of the simulation
 
@@ -213,11 +213,11 @@ As you can see, the averaged number of people disembarking almost doubled, thank
 
 Lets see the difference before and after with the GUI
 
-![before training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/dev/sequential/screenshots/before_training.gif)
+![before training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/main/screenshots/before_training.gif)
 
 Before
 
-![after training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/dev/sequential/screenshots/after_training.gif)
+![after training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/main/screenshots/after_training.gif)
 
 After
 

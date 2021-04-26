@@ -1,7 +1,7 @@
 @testset "Optimizer" begin
-    using BRTAutomaton
     i1 = Itinerary(true, falses(4)...)
     buses = [deepcopy(i1) for i in 1:20]
+    Random.seed!(10)
     a = Automaton(
                     station_quantity=5,
                     buses_as_itineraries=buses)

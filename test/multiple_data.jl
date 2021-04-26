@@ -10,7 +10,6 @@
     end
 
     @testset "Multiple stations" begin
-        using BRTAutomaton
         i1 = Itinerary(true, true)
         i2 = Itinerary(true, false)
         buses = [i1, i2]
