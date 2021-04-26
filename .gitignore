@@ -1,2 +1,7 @@
 .vscode
 Manifest.toml
+automaton.jld2
+log.txt
+todo
+playground.jl
+performancelog.txt

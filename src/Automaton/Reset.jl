@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Reset.jl (c) 2021
 Description: Resets the automaton to the initial state
 Created:  2021-04-24T00:36:03.651Z
-Modified: 2021-04-25T04:25:49.426Z
+Modified: 2021-04-25T22:55:38.173Z
 =#
 
 function reset!(automaton::Automaton)

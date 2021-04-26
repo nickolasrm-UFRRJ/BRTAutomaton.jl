@@ -45,17 +45,22 @@
             {
                 let iters = $('#input-iterations').val()
                 let sl = $('#input-sleep').val()
-                sendMessageToJulia(`iterate:${iters}:${sl}`)
+                if(iters == '')
+                    $('#input-iterations').focus()
+                else if (sl == '')
+                    $('#input-sleep').focus()
+                else
+                    sendMessageToJulia(`iterate:${iters}:${sl}`)
             }
 
             function block_input()
             {
-                $('#input-iterations, #btn-run').attr('disabled', '')
+                $('input').attr('disabled', '')
             }
 
             function unblock_input()
             {
-                $('#input-iterations, #btn-run').removeAttr('disabled')
+                $('input').removeAttr('disabled')
             }
 
             const zoom_step = 0.05
@@ -89,7 +94,7 @@
             }
             #drawing-area
             {
-                zoom: 1;
+                zoom: 0.2;
             }
             .cell
             {
@@ -138,6 +143,13 @@
                             </tr>
                         </tbody>
                     </table>
+                    <br>
+                    <h4>Information</h4>
+                    <a><span style="color: green;">■</span> Green: Empty substation</a><br>
+                    <a><span style="color: blue;">■</span> Blue: Occupied substation</a><br>
+                    <a><span style="color: black">■</span> Black: Bus</a><br>
+                    <a><span style="color: red">■</span> Red: Loop wall</a><br>
+                    <a><span style="color: white; -webkit-text-stroke: 1px black;">■</span> White: Empty</a>
                 </div>
             </article>
             <aside class="d-flex d-inline">

@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Automaton.jl (c) 2021
 Description: Transition functions for bus movement
 Created:  2021-03-21T00:53:00.324Z
-Modified: 2021-04-25T03:14:05.027Z
+Modified: 2021-04-26T05:02:11.234Z
 =#
 
 function move!(bus::Bus,

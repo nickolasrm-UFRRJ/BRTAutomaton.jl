@@ -4,8 +4,11 @@ Emails: nickolas123full@gmail.com
 Automaton.jl (c) 2021
 Description: General purpose functions for managing Data structures
 Created:  2021-03-21T00:53:00.324Z
-Modified: 2021-04-25T04:12:45.153Z
+Modified: 2021-04-26T05:07:39.656Z
 =#
+
+#Id
+@inline isbus(id::Id, buses_quantity::Int) = id > EMPTY && id <= buses_quantity
 
 #Intinerary
 @inline should_stop(intinerary::Intinerary, station::Station) = 
@@ -17,6 +20,8 @@ Modified: 2021-04-25T04:12:45.153Z
 
 #Mesh
 @inline isntempty(mesh::Vector{Id}, i::Position) = mesh[i] != EMPTY
+@inline object(mesh::Vector{Id}, i::Position, objects::Vector{Object}) = 
+    objects[mesh[i]]
 
 
 #Bus
@@ -27,6 +32,7 @@ Modified: 2021-04-25T04:12:45.153Z
 @inline decr_boarded!(bus::Bus) = boarded!(bus, boarded(bus) - one(Sleep))
 @inline incr_boarded!(bus::Bus) = boarded!(bus, boarded(bus) + one(Sleep))
 @inline isboarded(bus::Bus) = boarded(bus) > zero(Sleep)
+@inline isstopped(bus::Bus) = speed(bus) == zero(Speed)
     
 
 

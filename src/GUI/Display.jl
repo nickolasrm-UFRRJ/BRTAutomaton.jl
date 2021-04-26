@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Display.jl (c) 2021
 Description: Drawing functions for displaying the automaton
 Created:  2021-04-23T20:29:06.663Z
-Modified: 2021-04-25T08:14:30.357Z
+Modified: 2021-04-26T05:13:13.011Z
 =#
 
 const BUS_COLOR = "#000"
@@ -36,13 +36,20 @@ function initialize(w::Window, automaton::Automaton)
 end
 
 from(pos::Integer, length::Integer) = Int(pos - length + 1)
+from(pos::Integer) = Int(pos)
 to(pos::Integer) = Int(pos)
+to(pos::Integer, length::Integer) = Int(pos + length - 1)
 
 function draw(w::Window, bus::Bus)
-    lpos = Automata.last_position(bus)
-    run(w, "clear($(from(lpos, Automata.BUS_LENGTH)), $(to(lpos)))")
-    pos = position(bus)
-    run(w, "draw($(from(pos, Automata.BUS_LENGTH)), $(to(pos)), '$(BUS_COLOR)')")
+    if !Automata.isboarded(bus)
+        lpos = Automata.last_position(bus)
+        run(w, "clear($(from(lpos, Automata.BUS_LENGTH)), $(to(lpos)))")
+        pos = position(bus)
+        run(w, "draw($(from(pos, Automata.BUS_LENGTH)), $(to(pos)), '$(BUS_COLOR)')")
+    elseif Automata.boarded(bus) == Automata.FLAG_JUST_BOARDED
+        lpos = Automata.last_position(bus)
+        run(w, "clear($(from(lpos, Automata.BUS_LENGTH)), $(to(lpos)))")
+    end
 end
 
 function draw_stats(w::Window, automaton::Automaton)
@@ -53,18 +60,18 @@ end
 function draw(w::Window, sub::AbstractSubstation)
     pos = position(sub)
     if Automata.occupied(sub)
-        run(w, "draw($(from(pos, Automata.SUBSTATION_LENGTH)), $(to(pos)), "*
+        run(w, "draw($(from(pos)), $(to(pos, Automata.SUBSTATION_LENGTH)), "*
                 "'$(OCCUPIED_SUBSTATION_COLOR)')")
     else
-        run(w, "draw($(from(pos, Automata.SUBSTATION_LENGTH)), $(to(pos)), "*
+        run(w, "draw($(from(pos)), $(to(pos, Automata.SUBSTATION_LENGTH)), "*
                 "'$(SUBSTATION_COLOR)')")
     end
 end
 
 function draw(w::Window, wall::LoopWall)
     pos = position(wall)
-    run(w, "clear($(from(pos, Automata.BUS_LENGTH + 1)), $(to(pos)))")
-    run(w, "draw($(from(pos, 1)), $(to(pos)), '$(LOOP_WALL_COLOR)')")
+    run(w, "clear($(from(pos, Automata.BUS_LENGTH+1)), $(to(pos)))")
+    run(w, "draw($(from(pos)), $(to(pos)), '$(LOOP_WALL_COLOR)')")
 end
 
 function draw(w::Window, automaton::Automaton)
@@ -97,11 +104,12 @@ end
 function gui(a::Automaton)
     w = start()
     initialize(w, a)
-    #try
+    draw(w, a)
+    try
         while(w.exists)
             input(w, a)
         end
-    #catch
-    #    @info "Window closed"
-    #end
+    catch
+        @info "Window closed"
+    end
 end

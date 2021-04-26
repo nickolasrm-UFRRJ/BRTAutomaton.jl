@@ -8,5 +8,7 @@ module BRTAutomaton
     @reexport using .GUI
     include("Optimizer.jl")
     @reexport using .Optimizer
+    include("Utility.jl")
+    @reexport using .Utility
 
 end

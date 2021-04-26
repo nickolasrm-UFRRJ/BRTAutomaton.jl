@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Iteration.jl (c) 2021
 Description: Contains functions related to the automaton iterations
 Created:  2021-04-19T19:50:34.354Z
-Modified: 2021-04-25T09:06:55.883Z
+Modified: 2021-04-26T05:37:14.389Z
 =#
 
 function run!(automaton::Automaton, iterations::Int)
@@ -35,7 +35,7 @@ function iterate!(automaton::Automaton)
     for station in arr_stations iterate!(station, 
         capacity(Station, automaton)) end
     for sub in heads iterate!(automaton, sub, mesh_i, mesh_i1, length(arr_buses), 
-        bus_capacity, exit_looking_distance(automaton), boarded_iters) end
+        bus_capacity, exit_looking_distance(automaton), boarded_iters, arr_objects) end
     #because they are sequentially allocated, substations will 
     #be sorted in decrescent order 
     for tail in tails for sub in tail iterate!(automaton, sub, mesh_i, mesh_i1,
@@ -90,9 +90,9 @@ enqueue!(automaton::Automaton, queue::Vector{Bus}, wall::LoopWall) =
         push!(queue, bus!(wall)) 
     end
 
-function iterate!(station::Station, station_capacity::StationCapacity)
+function iterate!(station::Station, _station_capacity::StationCapacity)
     passengers!(station, min(generation_rate(station) + passengers(station),
-                              station_capacity))
+                              _station_capacity))
 end
 
 function iterate!(automaton::Automaton, bus::Bus, mesh_i::Vector{Id}, 
@@ -110,14 +110,15 @@ end
 function iterate!(automaton::Automaton, sub::HeadSubstation, 
         mesh_i::Vector{Id}, mesh_i1::Vector{Id},
         buses_quantity::Int, bus_capacity::BusCapacity, 
-        exit_looking_distance::Position, boarded_iterations::Sleep)
+        exit_looking_distance::Position, boarded_iterations::Sleep,
+        objects::Vector{Object})
     if occupied(sub)
         _bus = bus(sub)
         station = parent(sub)
         board!(_bus, boarded_iterations, mesh_i, mesh_i1)
         disembark!(automaton, _bus, station)
         embark!(automaton, _bus, station, bus_capacity)
-        shift!(_bus, sub, mesh_i, buses_quantity, exit_looking_distance)
+        shift!(_bus, sub, mesh_i, buses_quantity, exit_looking_distance, objects)
         incr_boarded_counter!(automaton)
     end
     write!(mesh_i, sub)

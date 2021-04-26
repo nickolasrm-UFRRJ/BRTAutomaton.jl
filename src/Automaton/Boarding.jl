@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Boarding.jl (c) 2021
 Description: A set of functions to control the bus flow into the station
 Created:  2021-04-22T14:58:48.251Z
-Modified: 2021-04-25T08:11:13.414Z
+Modified: 2021-04-26T05:08:57.014Z
 =#
 
 function board!(bus::Bus, boarded_counter::Sleep,
@@ -38,13 +38,14 @@ function shift!(bus::Bus, sub::TailSubstation)
 end
 
 function shift!(bus::Bus, sub::HeadSubstation, mesh::Vector{Id}, 
-        buses_quantity::Int, exit_looking_distance::Position)
+        buses_quantity::Int, exit_looking_distance::Position, 
+        objects::Vector{Object})
     if isboarded(bus)
         decr_boarded!(bus)
     end
     if !isboarded(bus)
         bus_pos = position(sub) + BUS_LENGTH
-        if no_bus(mesh, bus_pos, buses_quantity, exit_looking_distance)
+        if no_bus(mesh, bus_pos, buses_quantity, exit_looking_distance, objects)
             position!(bus, bus_pos)
             speed!(bus, zero(Speed))
             clear!(sub)
@@ -55,9 +56,21 @@ function shift!(bus::Bus, sub::HeadSubstation, mesh::Vector{Id},
 end
 
 function no_bus(mesh::Vector{Id}, pos::Position, buses_quantity::Int,
+        exit_looking_distance::Position, objects::Vector{Object})
+    for i in (pos - exit_looking_distance):pos
+        if isbus(mesh[i], buses_quantity)
+            if isstopped(object(mesh, i, objects))
+                return false
+            end
+        end
+    end
+    return true
+end
+
+function no_bus(mesh::Vector{Id}, pos::Position, buses_quantity::Int,
         exit_looking_distance::Position)
     for i in (pos - exit_looking_distance):pos
-        if mesh[i] > EMPTY && mesh[i] <= buses_quantity
+        if isbus(mesh[i], buses_quantity)
             return false
         end
     end

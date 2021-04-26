@@ -15,7 +15,7 @@
     end
 
     @testset "Cyclic" begin
-        run!(a, 25)
+        run!(a, 24)
         @test waiting(buses(a)[1])
         run!(a, 500)
         @test true
