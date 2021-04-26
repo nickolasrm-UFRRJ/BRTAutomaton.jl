@@ -8,6 +8,7 @@ os:
 branches:
   - main
   - working
+  - dev/sequential
 
 julia:
   - 1.6
