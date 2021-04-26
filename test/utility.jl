@@ -6,11 +6,21 @@
                     buses_as_itineraries=_buses)
     run!(a, 100)
     save(a)
-    @test isfile(joinpath(pwd(), "automaton.jld2"))
-    b = load()
+    @test isfile(joinpath(pwd(), Utility.AUTOMATON_FILENAME))
+    b = load(Automaton)
     @test a.buses[1].position == a.buses[1].position
-    rm(joinpath(pwd(), "automaton.jld2"))
+    rm(joinpath(pwd(), Utility.AUTOMATON_FILENAME))
 
-    run_multiple!(100, a, b)
+    set = TrainingSet(a,
+            population_size=2, 
+            elitism=1,
+            mutation_rate=0.1)
+    save(set)
+    @test isfile(joinpath(pwd(), Utility.TRAININGSET_FILENAME))
+    b = load(TrainingSet)
+    @test elitism(b) == elitism(set)
+    rm(joinpath(pwd(), Utility.TRAININGSET_FILENAME))
+
+    run_multiple!(100, a, deepcopy(a))
     @test a.buses[1].position == a.buses[1].position
 end

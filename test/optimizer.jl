@@ -12,10 +12,9 @@
 
     set = TrainingSet(a,
             population_size=100, 
-            iterations=1000,
             elitism=10,
             mutation_rate=0.1)
-    train!(a, set, gen_limit=20)
+    train!(a, set, gen_limit=5)
     
     run!(a, 1000)
 

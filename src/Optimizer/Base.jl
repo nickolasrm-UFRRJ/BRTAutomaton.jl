@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Run.jl (c) 2021
 Description: Structures for the genetic simulation
 Created:  2021-04-25T18:15:04.665Z
-Modified: 2021-04-26T00:57:34.060Z
+Modified: 2021-04-26T22:16:43.045Z
 =#
 
 struct Candidate
@@ -46,15 +46,18 @@ struct TrainingSet
     envs::Vector{Automaton}
     candidates::Vector{Candidate}
 
-    iterations::Ref{Int}
+    evaluation_function::Function
     elitism::Ref{Int}
     crossover_point::Ref{Int}
     mutation_rate::Ref{Float32}
 end
 
+#prototype
+function evaluate! end
+
 function TrainingSet(automaton::Automaton; 
         population_size::Int=200,
-        iterations::Int=1000,
+        evaluation_function::Function=evaluate!,
         elitism::Int=10,
         crossover_point::Int=round(Int, length(lines(automaton)[1])/2),
         mutation_rate::Real=0.2f0)
@@ -65,7 +68,6 @@ function TrainingSet(automaton::Automaton;
         "Elitism cannot be nagative and neither greater than population size")
     @assert population_size > 1 "At least two candidates are needed to train the automaton"
     @assert mutation_rate >= 0 && mutation_rate <= 1 "Mutation rate is out of bounds"
-    @assert iterations > 0 "At least one iteration is needed to evaluate the automaton"
 
     reset!(automaton)
     threads_quantity = Threads.nthreads()
@@ -80,7 +82,7 @@ function TrainingSet(automaton::Automaton;
     TrainingSet(
         envs,
         cands,
-        Ref(iterations),
+        evaluation_function,
         Ref(elitism),
         Ref(crossover_point),
         Ref(mutation_rate)
@@ -100,8 +102,7 @@ crossover_point!(set::TrainingSet, val::Int) = set.crossover_point[] = val
 mutation_rate(set::TrainingSet) = set.mutation_rate[]
 mutation_rate!(set::TrainingSet, val::Real) = set.mutation_rate[] = Float32(val)
 
-iterations(set::TrainingSet) = set.iterations[]
-iterations!(set::TrainingSet, val::Int) = set.iterations[] = val
+evaluation_function(set::TrainingSet) = set.evaluation_function
 
 
 #Displays
@@ -112,7 +113,7 @@ Base.show(io::IO, set::TrainingSet) =
                 "\n\tElitism: $(elitism(set))"*
                 "\n\tCrossover point: $(crossover_point(set))"*
                 "\n\tMutation rate: $(mutation_rate(set))"*
-                "\n\tAutomaton iterations: $(iterations(set))"*
+                "\n\tEvaluation function: $(evaluation_function(set))"*
                 "\n)")
 
 Base.display(set::TrainingSet) = 
@@ -122,5 +123,5 @@ Base.display(set::TrainingSet) =
                 "\n\tElitism: $(elitism(set))"*
                 "\n\tCrossover point: $(crossover_point(set))"*
                 "\n\tMutation rate: $(mutation_rate(set))"*
-                "\n\tAutomaton iterations: $(iterations(set))"*
+                "\n\tEvaluation function: $(evaluation_function(set))"*
                 "\n)")

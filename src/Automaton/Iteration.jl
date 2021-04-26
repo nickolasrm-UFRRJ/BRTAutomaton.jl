@@ -4,7 +4,7 @@ Emails: nickolas123full@gmail.com
 Iteration.jl (c) 2021
 Description: Contains functions related to the automaton iterations
 Created:  2021-04-19T19:50:34.354Z
-Modified: 2021-04-26T05:37:14.389Z
+Modified: 2021-04-26T22:24:29.448Z
 =#
 
 function run!(automaton::Automaton, iterations::Int)
@@ -40,7 +40,7 @@ function iterate!(automaton::Automaton)
     #be sorted in decrescent order 
     for tail in tails for sub in tail iterate!(automaton, sub, mesh_i, mesh_i1,
         bus_capacity, boarded_iters) end end
-    Threads.@threads for bus in arr_buses iterate!(automaton, bus, mesh_i, mesh_i1, 
+    for bus in arr_buses iterate!(automaton, bus, mesh_i, mesh_i1, 
         arr_objects, max_speed(automaton)) end
 
     incr_iteration_counter!(automaton)

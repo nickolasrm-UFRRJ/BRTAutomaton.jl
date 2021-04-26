@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.com/nickolasrm-UFRRJ/BRTAutomaton.jl.svg?branch=main)](https://travis-ci.com/nickolasrm-UFRRJ/BRTAutomaton.jl)
 [![Coverage Status](https://coveralls.io/repos/github/nickolasrm-UFRRJ/BRTAutomaton.jl/badge.svg?branch=main)](https://coveralls.io/github/nickolasrm-UFRRJ/BRTAutomaton.jl?branch=main)
 
-_A study case of Bus Rapid Traffic system modeled with cellular automata._
+_A study case of the Bus Rapid Transit system modeled with cellular automata._
 
 ## About the project
 This package contains a Bus Rapid Transit (BRT) system simulator made using a cellular automata model. BRTs are a transport alternative to the regular buses. Instead of letting the buses being driven like cars, they are allocated in an exclusive lane, usually at the margin of a highway, which makes them faster and free of traffic congestion. This project focuses on simulating it to help ML scientists developing solutions to improve the quality of the system.
@@ -13,7 +13,7 @@ This package contains a Bus Rapid Transit (BRT) system simulator made using a ce
 - Reinforcement learning optimizer
 
 ## Simulator
-The main simulation consists of five objects, the substations, the buses, the loop wall, and the stations, and their relations. 
+The main simulation consists of four objects, the substations, the buses, the loop wall, and the stations, and their relations. 
 ### Bus
 A bus is the only unit that moves during the simulation. It has three basic rules: accelerating, deaccelerating, and moving. These rules are described as the following sequential steps:
 1. Accelerating: `if bus_speed < max_speed, then bus_speed += 1`
@@ -25,7 +25,7 @@ A bus is the only unit that moves during the simulation. It has three basic rule
 3. Moving: `bus_position += bus_speed`
 
 ### Substations
-A substation is an object that makes a bus to stop and also let the passengers embark and disembark. Also, when a bus enters a substation, it is removed from the main lane, and it is transported through the substations at its respective station. 
+A substation is an object that makes a bus stop and lets the passengers embark and disembark. Also, when a bus enters a substation, it is removed from the main lane, and it is transported through the substations at its respective station. 
 
 The substation follows the respective algorithm:
 
@@ -68,7 +68,7 @@ clear the last position of the bus in the mesh
 ```
 
 ### How to use it?
-To use this package, you have to first have to download its dependencies. But don't worry, Julia does this automatically. Just follow these steps and everything will be fine :)
+To use this package, you have to first have to download its dependencies. Don't worry, Julia does this automatically. Just follow these steps and everything will be fine :)
 
 #### **Installing**
 1. Open Julia on the project folder
@@ -131,7 +131,7 @@ To use a GUI with your automaton, simply call: `gui(automaton)`. Once the interf
 > Note: You can zoom in and out the map to have a larger view of the simulation
 
 ## Optimizing the number of passengers with reinforcement learning
-Since some stations have less or more embarking and disembarking rates than others (check the station section if you skipped it), and the each bus has to know where to stop, configuring different itineraries can lead to different embarking and disembarking averages when simulating a scenario. Because of that, we can use reinforcement learning to learn the best set of stations for each bus to maximize the passengers flow.
+Since some stations have less or more embarking and disembarking rates than others (check the station section if you skipped it), and each bus has to know where to stop, configuring different itineraries can lead to different embarking and disembarking averages when simulating a scenario. Because of that, we can use reinforcement learning to learn the best set of stations for each bus to maximize the passengers flow.
 
 ### How do I start?
 #### **Simpler example**
@@ -153,12 +153,32 @@ set = TrainingSet(automaton,
 ```
 This training set constructor have the following keyword arguments:
 - population_size: DEFAULT=200
-- iterations: DEFAULT=1000
+- evaluation_function: DEFAULT=evaluate!
 - elitism: DEFAULT=10
 - crossover_point: DEFAULT=round(station_quantity/2)
 - mutation_rate: DEFAULT=0.2
 
+##### **Tunning**
 Changing any of these parameters will affect the convergence time of the training in a positive or negative way. For example, increasing the mutation rate can help avoiding [local minimums](https://en.wikipedia.org/wiki/Maxima_and_minima), but at the same time it will disturb the propagation of small solutions. Read more about genetic algorithm and its parameters [here](https://www.obitko.com/tutorials/genetic-algorithms/index.php)
+
+##### **The evaluation function**
+The evaluation_function parameter holds the `evaluate!` function by default. It is described as follows:
+```julia
+function evaluate!(env::Automaton)
+    run!(env, 1000)
+    (10*avg_speed(env) + 4*avg_disembarking(env))
+end
+```
+This function is set to maximize the number of passengers disembarking and the average speed. Furthermore, if you want to write your own evaluation function, you just have to pass it to the `evaluation_function` parameter when creating you training set. Check out an example above:
+```julia
+function my_eval!(env::Automaton)
+    run!(env, 500)
+    #it will make the GA try maximizing the average speed
+    avg_speed(env)
+end
+set = TrainingSet(automaton, 
+            evaluation_function=my_eval!)
+```
 
 > Note: Each of these parameters can be changed after the training set is created by calling its respective functions. e.g: `elitism!(set, 15)`
 
@@ -227,11 +247,13 @@ What if you liked your automaton? How can I save it?
 _This is a job for utilitary functions!_
 
 There are three functions in this module:
-- **save(::Automaton):** Saves the automaton in a file inside of the current pwd()
+- **save(::Automaton):** Saves the automaton in a file inside of the current pwd(). Example: `save(automaton)`
 
-- **load():** Loads the automaton of the previously saved file if there is one inside of the current pwd()
+- **load(::Type{Automaton}):** Loads the automaton of the previously saved file if there is one inside of the current pwd(). Example: `a = load(Automaton)`
 
-- **run_multiple!(iterations, ::Automaton...):** Since a rel BRT has at least two lanes, it does make sense to run more than one automaton. This function does not do anything special, it only executes multiple automatons in parallel. 
+- **run_multiple!(iterations, ::Automaton...):** Since a rel BRT has at least two lanes, it does make sense to run more than one automaton. This function does not do anything special, it only executes multiple automatons in parallel. Example: `run_multiple!(500, automaton1, automaton2)`
+
+> Note: Saving and loading can be done with TrainingSet too. Example: `set = load(TrainingSet)`
 
 ## References
 [1] Kai Nagel, Michael Schreckenberg. A cellular automaton model for freeway traffic. Journal

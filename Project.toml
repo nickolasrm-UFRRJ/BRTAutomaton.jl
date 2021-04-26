@@ -1,7 +1,7 @@
 name = "BRTAutomaton"
 uuid = "914ab325-c24f-4a99-8c45-6abcde4fdbed"
 authors = ["nickolas da rocha machado <nickolas123full@gmail.com>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [deps]
 Electron = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3"
