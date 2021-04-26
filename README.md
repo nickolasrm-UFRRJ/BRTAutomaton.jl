@@ -126,7 +126,7 @@ Nothing better than a gui to see results.
 
 To use a GUI with your automaton, simply call: `gui(automaton)`. Once the interface opens, you can set the number of iterations you want to run, and the sleep between each of them.
 
-![graphics user interface](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/tree/dev/sequential/screenshots/gui.gif)
+![graphics user interface](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/dev/sequential/screenshots/gui.gif)
 
 > Note: You can zoom in and out the map to have a larger view of the simulation
 
@@ -213,11 +213,11 @@ As you can see, the averaged number of people disembarking almost doubled, thank
 
 Lets see the difference before and after with the GUI
 
-![before training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/tree/dev/sequential/screenshots/before_training.gif)
+![before training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/dev/sequential/screenshots/before_training.gif)
 
 Before
 
-![after training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/tree/dev/sequential/screenshots/after_training.gif)
+![after training](https://github.com/nickolasrm-UFRRJ/BRTAutomaton.jl/blob/dev/sequential/screenshots/after_training.gif)
 
 After
 
