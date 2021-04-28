@@ -1,6 +1,8 @@
 module BRTAutomaton
 
     using Reexport
+    using SIMD
+    using StaticArrays
 
     include("Automata.jl")
     @reexport using .Automata

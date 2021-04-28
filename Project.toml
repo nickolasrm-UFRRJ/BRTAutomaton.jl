@@ -1,17 +1,19 @@
 name = "BRTAutomaton"
 uuid = "914ab325-c24f-4a99-8c45-6abcde4fdbed"
 authors = ["nickolas da rocha machado <nickolas123full@gmail.com>"]
-version = "1.0.0"
+version = "1.0.1"
 
 [deps]
 Electron = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+SIMD = "fdea26ae-647d-5447-a871-4b548cad5224"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "Random"]

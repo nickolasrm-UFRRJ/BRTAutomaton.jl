@@ -4,21 +4,39 @@ Emails: nickolas123full@gmail.com
 Iteration.jl (c) 2021
 Description: Contains functions related to the automaton iterations
 Created:  2021-04-19T19:50:34.354Z
-Modified: 2021-04-26T22:24:29.448Z
+Modified: 2021-04-28T22:30:08.379Z
 =#
 
-function run!(automaton::Automaton, iterations::Int)
-    for i = 1:iterations iterate!(automaton) end
+function calc_range(tid, len)
+    nthread = Threads.nthreads()
+    if len > nthread
+        return (round(Int, (tid-1)*len/nthread+1)):(round(Int, tid*len/nthread))
+    elseif tid <= len
+        return tid:tid
+    else
+        return 1:0
+    end
 end
 
-function iterate!(automaton::Automaton)
+function run!(automaton::Automaton, iterations::Int)
+    nthread = Threads.nthreads()
+    tasks = Vector{Task}(undef, nthread)
+    bus_indexes = Vector{UnitRange}(undef, nthread)
+    station_indexes = Vector{UnitRange}(undef, nthread)
+    for j in 1:nthread
+        bus_indexes[j] = calc_range(j, length(buses(automaton)))
+        station_indexes[j] = calc_range(j, length(stations(automaton)))
+    end
+
+    for i = 1:iterations iterate!(automaton, tasks, 
+        bus_indexes, station_indexes) end
+end
+
+function iterate!(automaton::Automaton, tasks::Vector{Task},
+        buses_indexes::Vector{UnitRange}, station_indexes::Vector{UnitRange})
     arr_buses = buses(automaton)
-    heads = head_substations(automaton)
-    tails = tail_substations(automaton)
-    arr_stations = stations(automaton)
     arr_objects = objects(automaton)
     mesh_i, mesh_i1 = meshes!(automaton)
-    bus_capacity = capacity(Bus, automaton)
     boarded_iters = boarded_iterations(automaton)
     
     deploy_bus!(
@@ -32,19 +50,68 @@ function iterate!(automaton::Automaton)
         boarded_iters
     )
 
-    for station in arr_stations iterate!(station, 
-        capacity(Station, automaton)) end
-    for sub in heads iterate!(automaton, sub, mesh_i, mesh_i1, length(arr_buses), 
-        bus_capacity, exit_looking_distance(automaton), boarded_iters, arr_objects) end
-    #because they are sequentially allocated, substations will 
-    #be sorted in decrescent order 
-    for tail in tails for sub in tail iterate!(automaton, sub, mesh_i, mesh_i1,
-        bus_capacity, boarded_iters) end end
-    for bus in arr_buses iterate!(automaton, bus, mesh_i, mesh_i1, 
-        arr_objects, max_speed(automaton)) end
+    parallel_stations(automaton, tasks, station_indexes, 
+        mesh_i, mesh_i1, arr_buses, arr_objects, boarded_iters)
+    parallel_buses(automaton, tasks, buses_indexes, 
+        mesh_i, mesh_i1, arr_buses, arr_objects)
 
     incr_iteration_counter!(automaton)
 end
+
+#Parallel
+@inline function parallel_stations(automaton::Automaton, 
+        tasks::Vector{Task},
+        station_indexes::Vector{UnitRange},
+        mesh_i::Vector{Id}, mesh_i1::Vector{Id}, 
+        arr_buses::Vector{Bus}, arr_objects::Vector{Object},
+        boarded_iters::Sleep)
+    station_cap = capacity(Station, automaton)
+    arr_stations = stations(automaton)
+
+    arr_heads = head_substations(automaton)
+    bus_capacity = capacity(Bus, automaton)
+    look = exit_looking_distance(automaton)
+
+    arr_tails = tail_substations(automaton)
+    
+    for i in eachindex(tasks)
+        tasks[i] = @task for j in station_indexes[i]
+            iterate!(arr_stations[j], station_cap)
+            iterate!(automaton, arr_heads[j], mesh_i, mesh_i1, length(arr_buses), 
+                bus_capacity, look, boarded_iters, arr_objects)
+            for sub in arr_tails[j]
+                iterate!(automaton, sub, mesh_i, mesh_i1,
+                    bus_capacity, boarded_iters)
+            end
+        end
+        tasks[i].sticky = true
+        ccall(:jl_set_task_tid, Cvoid, (Any, Cint), tasks[i], length(tasks)-i)
+        schedule(tasks[i])
+    end
+    wait.(tasks)
+end
+
+@inline function parallel_buses(automaton::Automaton, 
+        tasks::Vector{Task}, buses_indexes::Vector{UnitRange},
+        mesh_i::Vector{Id}, mesh_i1::Vector{Id},
+        arr_buses::Vector{Bus}, arr_objects::Vector{Object})
+    len = length(arr_buses)
+    maxspeed = max_speed(automaton)
+    
+    for i in eachindex(tasks)
+        tasks[i] = @task begin
+            for j in buses_indexes[i]
+                iterate!(automaton, arr_buses[j], mesh_i, mesh_i1, arr_objects, maxspeed)
+            end
+        end
+        tasks[i].sticky = true
+        ccall(:jl_set_task_tid, Cvoid, (Any, Cint), tasks[i], length(tasks)-i)
+        schedule(tasks[i])
+    end
+    wait.(tasks)
+end
+
+
 
 function deploy_bus!(automaton::Automaton, queue::Vector{Bus}, 
         wall::LoopWall, mesh_i::Vector{Id}, mesh_i1::Vector{Id}, 

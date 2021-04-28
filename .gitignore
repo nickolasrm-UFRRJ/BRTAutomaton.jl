@@ -6,3 +6,5 @@ todo
 playground.jl
 performancelog.txt
 trainingset.jld2
+benchmarklog
+benchmarktools_playground.jl
